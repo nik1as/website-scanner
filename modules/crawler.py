@@ -117,8 +117,10 @@ class Crawler(Module):
 
         await crawl(args.url, 1)
 
-        return {
-            "directories": {d.directory: d.json() for d in directories.values()},
-            "emails": list(emails),
-            "comments": list(comments)
-        }
+        result = {"directories": {d.directory: d.json() for d in directories.values()}}
+        if emails:
+            result["emails"] = list(emails)
+        if comments:
+            result["comments"] = list(comments)
+
+        return result
