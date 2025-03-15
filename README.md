@@ -16,21 +16,23 @@ A fast and powerful website scanner for CTFs.
 ## Usage
 
 ```
-usage: main.py [-h] -u URL [-o OUTPUT] [-c COOKIE] [-t TIMEOUT] [-i [IGNORE ...]] [--user-agent USER_AGENT] [--depth DEPTH] [--proxy PROXY] [--auth AUTH] [--vulns] [--lfi-depth LFI_DEPTH]
+usage: main.py [-h] -u URL [-o OUTPUT] [-c COOKIE] [-t TIMEOUT] [-i [IGNORE ...]] [--user-agent USER_AGENT] [--depth DEPTH] [--proxy PROXY] [--auth AUTH] [--vulns] [--lfi-depth LFI_DEPTH] [--wordpress-user-ids WORDPRESS_USER_IDS [WORDPRESS_USER_IDS ...]]
 
 Scan a website
 
 options:
-  -h, --help                              show this help message and exit
-  -u URL, --url URL                       URL to scan
-  -o OUTPUT, --output OUTPUT              Output json file
-  -c COOKIE, --cookie COOKIE              Cookie
-  -t TIMEOUT, --timeout TIMEOUT           Timeout
-  -i [IGNORE ...], --ignore [IGNORE ...]  Directories to ignore e.g. /logout
-  --user-agent USER_AGENT                 User Agent
-  --depth DEPTH                           Maximum crawler depth
-  --proxy PROXY                           Proxy server
-  --auth AUTH                             Basic Authentication <username>:<password>
-  --vulns                                 Scan for vulnerabilities
-  --lfi-depth LFI_DEPTH                   Maximum lfi depth
+  -h, --help                                      show this help message and exit
+  -u, --url URL                                   URL to scan
+  -o, --output OUTPUT                             Output json file
+  -c, --cookie COOKIE                             Cookie
+  -t, --timeout TIMEOUT                           Timeout
+  -i, --ignore [IGNORE ...]                       Directories to ignore e.g. /logout
+  --user-agent USER_AGENT                         User Agent
+  --depth DEPTH                                   Maximum crawler depth
+  --proxy PROXY                                   Proxy server
+  --auth AUTH                                     Basic Authentication <username>:<password>
+  --vulns                                         Scan for vulnerabilities
+  --lfi-depth LFI_DEPTH                           Maximum lfi depth
+  --wordpress-user-ids WORDPRESS_USER_IDS [WORDPRESS_USER_IDS ...]
+                                                  Wordpress user IDs
 ```

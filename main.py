@@ -25,6 +25,7 @@ def parse_args():
 
     parser.add_argument("--vulns", required=False, action="store_true", help="Scan for vulnerabilities")
     parser.add_argument("--lfi-depth", type=int, required=False, default=5, help="Maximum lfi depth")
+    parser.add_argument("--wordpress-user-ids", type=int, nargs="+", required=False, default=list(range(1, 20)), help="Wordpress user IDs")
 
     return parser.parse_args()
 
