@@ -4,14 +4,14 @@ from urllib.parse import urljoin
 
 import aiohttp
 
-from utils import unique_not_none
-from vulns import Vuln
+from utils import not_none
+from vulns import VulnerabilityModule
 
 with open("data/payloads/lfi.json") as f:
     PAYLOADS = json.load(f)
 
 
-class LFI(Vuln):
+class LFI(VulnerabilityModule):
 
     async def check_lfi(self, session: aiohttp.ClientSession, args, method, path, params, param, payload, content):
         try:
@@ -20,9 +20,9 @@ class LFI(Vuln):
             async with session.request(method, urljoin(args.url, path), **params_kwargs) as response:
                 text = await response.text()
                 if any(s in text for s in content):
-                    return f"LFI: {method.upper()} {path} with parameter {param}"
+                    return {"type": "LFI", "method": method, "path": path, "param": param, "payload": payload}
                 if response.status >= 500:
-                    return f"ERROR {response.status}: {method.upper()} {path} with parameter {param}"
+                    return {"type": "ERROR", "status": response.status, "method": method, "path": path, "param": param, "payload": payload}
         except:
             pass
 
@@ -43,5 +43,4 @@ class LFI(Vuln):
                 params[param] = file_path
                 tasks.append(self.check_lfi(session, args, method, path, params, param, file_path, content))
 
-        results = await asyncio.gather(*tasks)
-        return unique_not_none(results)
+        return not_none(await asyncio.gather(*tasks))

@@ -1,13 +1,14 @@
 import argparse
 import asyncio
+import itertools
 import json
 
 import aiohttp
 from aiohttp import BasicAuth
 
 from modules import Module
-from utils import print_json_tree
-from vulns import Vuln
+from utils import print_json_tree, group_dicts
+from vulns import VulnerabilityModule
 
 
 def parse_args():
@@ -64,11 +65,11 @@ async def main():
             output["vulnerabilities"] = []
 
             dirs = output["crawler"]["directories"]
-            tasks = [vuln().run(session, args, dirs) for vuln in Vuln.vulns]
+            tasks = [vuln().run(session, args, dirs) for vuln in VulnerabilityModule.modules]
             results = await asyncio.gather(*tasks)
-            for result in results:
-                output["vulnerabilities"].extend(result)
-            output["vulnerabilities"].sort()
+            results = list(itertools.chain(*results))
+            results = group_dicts(results, "payload")
+            output["vulnerabilities"] = results
 
     for title, result in sorted(output.items()):
         print("=" * 5 + " " + title.upper() + " " + "=" * 5)

@@ -6,12 +6,12 @@ import aiohttp
 from utils import load_modules
 
 
-class Vuln(ABC):
-    vulns = []
+class VulnerabilityModule(ABC):
+    modules = []
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        cls.vulns.append(cls)
+        cls.modules.append(cls)
 
     @abstractmethod
     async def run(self, session: aiohttp.ClientSession, args, dirs):

@@ -5,14 +5,14 @@ from urllib.parse import urljoin
 
 import aiohttp
 
-from utils import unique_not_none
-from vulns import Vuln
+from utils import not_none
+from vulns import VulnerabilityModule
 
 with open("data/payloads/ssti.json") as f:
     PAYLOADS = json.load(f)
 
 
-class SST(Vuln):
+class SST(VulnerabilityModule):
 
     async def check_ssti(self, session: aiohttp.ClientSession, args, method, path, params, param, payload, num):
         try:
@@ -21,9 +21,9 @@ class SST(Vuln):
             async with session.request(method, urljoin(args.url, path), **params_kwargs) as response:
                 text = await response.text()
                 if str(num * num) in text:
-                    return f"SSTI: {method.upper()} {path} with parameter {param} and payload {payload}"
+                    return {"type": "SSTI", "method": method, "path": path, "param": param, "payload": payload}
                 if response.status >= 500:
-                    return f"ERROR {response.status}: {method.upper()} {path} with parameter {param}"
+                    return {"type": "ERROR", "status": response.status, "method": method, "path": path, "param": param, "payload": payload}
         except:
             pass
 
@@ -35,5 +35,4 @@ class SST(Vuln):
         for method, path, params, param, payload in self.get_requests(dirs, payloads):
             tasks.append(self.check_ssti(session, args, method, path, params, param, payload, num))
 
-        results = await asyncio.gather(*tasks)
-        return unique_not_none(results)
+        return not_none(await asyncio.gather(*tasks))

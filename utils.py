@@ -1,5 +1,6 @@
 import os
 import traceback
+from collections import defaultdict
 from importlib import util
 from urllib.parse import parse_qs, urlparse, ParseResult, urlencode
 
@@ -17,9 +18,8 @@ def print_json_tree(data, indent=""):
             else:
                 print(f": {value}")
     elif isinstance(data, list):
-        for i, item in enumerate(data):
-            prefix = "└─ " if i == len(data) - 1 else "├─ "
-            print(indent + prefix + str(item))
+        for item in data:
+            print_json_tree(item, indent)
     else:
         print(indent + str(data))
 
@@ -36,6 +36,19 @@ def unique_not_none(seq):
     if None in results:
         results.remove(None)
     return list(results)
+
+def not_none(seq):
+    return [e for e in seq if e is not None]
+
+
+def group_dicts(data, group_key):
+    grouped_dict = defaultdict(list)
+
+    for item in data:
+        key = tuple((k, v) for k, v in item.items() if k != group_key)
+        grouped_dict[key].append(item[group_key])
+
+    return [dict(key, **{group_key: values}) for key, values in grouped_dict.items()]
 
 
 def load_module(path):
