@@ -48,7 +48,7 @@ class Git(Module):
                     author = parts[2]
                     message = " ".join(parts[6:])
 
-                    commits.append(f"hash=\"{commit_hash}\" author=\"{author}\" message=\"{message}\"")
+                    commits.append({"hash": commit_hash, "author": author, "message": message})
                 result["commits"] = commits
 
         return result

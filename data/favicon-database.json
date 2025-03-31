@@ -3448,5 +3448,23 @@
     "hash": "57f501d6fee2fdb024795abbdb750ad5",
     "name": "Hak5 Cloud C2",
     "source": "REDC2PORTAL"
+  },
+  {
+    "algorithm": "MD5",
+    "hash": "69c728902a3f1df75cf9eac73bd55556",
+    "name": "Damn Vulnerable Web Application",
+    "source": "nik1as"
+  },
+  {
+    "algorithm": "MD5",
+    "hash": "551e34acf2930bf083670fa203420993",
+    "name": "CMS Made Simple",
+    "source": "nik1as"
+  },
+  {
+    "algorithm": "MD5",
+    "hash": "3836e83a3e835a26d789dda9e78c5510",
+    "name": "Backdrop CMS",
+    "source": "nik1as"
   }
 ]

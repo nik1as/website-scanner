@@ -49,6 +49,8 @@ class Crawler(Module):
             parsed = urlparse(new_url)
             if parsed.path in args.ignore:
                 return
+            if parsed.scheme not in ["http", "https"]:
+                return
             if parsed.path not in directories:
                 directory = Directory(parsed.path)
                 directories[parsed.path] = directory
@@ -70,7 +72,11 @@ class Crawler(Module):
 
             try:
                 async with session.get(curr_url, **get_req_kwargs(args), allow_redirects=False) as response:
-                    html = await response.text()
+                    try:
+                        html = await response.text()
+                    except UnicodeDecodeError:
+                        return
+
                     soup = BeautifulSoup(html, "html.parser")
 
                     for match in EMAIL_REGEX.findall(html):

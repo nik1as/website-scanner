@@ -18,8 +18,14 @@ def print_json_tree(data, indent=""):
             else:
                 print(f": {value}")
     elif isinstance(data, list):
-        for item in data:
-            print_json_tree(item, indent)
+        for i, item in enumerate(data):
+            prefix = "└─ "
+            print(indent + prefix, end="")
+            if isinstance(item, (dict, list)):
+                print()
+                print_json_tree(item, indent + "   ")
+            else:
+                print(item)
     else:
         print(indent + str(data))
 

@@ -23,7 +23,9 @@ class Robots(Module):
                 sitemap = []
                 for line in lines:
                     if line.startswith("#"):
-                        comments.append(line.lstrip("#").strip())
+                        comment = line.lstrip("#").strip()
+                        if comment:
+                            comments.append(comment)
                     elif line.lower().startswith("allow:"):
                         allow.append(line[6:].strip())
                     elif line.lower().startswith("disallow:"):

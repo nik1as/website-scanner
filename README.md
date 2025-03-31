@@ -7,11 +7,17 @@ A fast and powerful web enumeration tool for CTFs.
 - basic information (title, generator, redirects)
 - crawler (directories, forms, emails, comments)
 - robots.txt
+- git
 - favicon fingerprint
 - interesting headers
 - directory enumeration
 - technology identification
-- scan for vulnerabilities (SQL-Injection, XSS, SSTI, LFI)
+- scan for vulnerabilities
+  - Command Injection
+  - SQL-Injection (error-based)
+  - XSS
+  - SSTI
+  - File Inclusion
 
 ## Installation
 
