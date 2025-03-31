@@ -78,7 +78,7 @@ def add_app(techs, name, version, spec):
             if not isinstance(implies, list):
                 implies = [implies]
             for app_name in implies:
-                add_app(techs, app_name, NO_VERSION_FOUND, TECHNOLOGIES[name])
+                add_app(techs, app_name, NO_VERSION_FOUND, TECHNOLOGIES[app_name])
         elif techs[category][name] == NO_VERSION_FOUND:
             techs[category][name] = version
 
