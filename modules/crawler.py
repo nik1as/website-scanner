@@ -1,5 +1,4 @@
 import asyncio
-import re
 from collections import defaultdict
 from urllib.parse import urlparse, parse_qs, urljoin
 
@@ -7,7 +6,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 from modules import Module
-from regex import HTML_COMMENT_REGEX, HTTP_URL_REGEX, EMAIL_REGEX
+from regex import EMAIL_REGEX, HTML_COMMENT_REGEX
 from utils import parse_form, get_req_kwargs
 
 
@@ -17,6 +16,30 @@ class Directory:
         self.directory = directory
         self.url_parameters = defaultdict(set)
         self.post_parameters = defaultdict(set)
+
+    def add_parameters(self, method: str, params: dict = None) -> bool:
+        if params is None:
+            return False
+        if method.casefold() == "get":
+            return self.add_query_parameters("&".join(f"{key}={value}" for key, value in params.items()))
+        if method.casefold() == "post":
+            return self.add_post_parameters(params)
+
+    def add_query_parameters(self, query: str) -> bool:
+        new_param = False
+        for key, values in parse_qs(query).items():
+            if any(v not in self.url_parameters[key] for v in values):
+                new_param = True
+            self.url_parameters[key].update(values)
+        return new_param
+
+    def add_post_parameters(self, params: dict[str, str]) -> bool:
+        new_param = False
+        for key, value in params.items():
+            if value not in self.post_parameters[key]:
+                new_param = True
+            self.post_parameters[key].add(value)
+        return new_param
 
     def json(self):
         result = dict()
@@ -37,41 +60,37 @@ class Crawler(Module):
         emails = set()
         comments = set()
 
-        def add_to_directories(href: str, curr_url: str):
-            new_url = href
-            if re.match(HTTP_URL_REGEX, href):
-                href_domain = urlparse(href).netloc
-                if href_domain != urlparse(curr_url).netloc:
-                    return
-            else:
-                new_url = urljoin(curr_url, href)
-
+        def add_to_directories(method: str, href: str, curr_url: str, params: dict = None) -> str | None:
+            new_url = urljoin(curr_url, href)
             parsed = urlparse(new_url)
-            if parsed.path in args.ignore:
+
+            if (parsed.netloc != urlparse(curr_url).netloc) or (parsed.path in args.ignore) or (parsed.scheme not in ["http", "https"]):
                 return
-            if parsed.scheme not in ["http", "https"]:
-                return
-            if parsed.path not in directories:
+
+            if parsed.path in directories:
+                directory = directories[parsed.path]
+                new_param = directory.add_query_parameters(parsed.query)
+                new_param = new_param or directory.add_parameters(method, params)
+                if new_param:
+                    return new_url
+            else:
                 directory = Directory(parsed.path)
+                directory.add_query_parameters(parsed.query)
+                directory.add_parameters(method, params)
                 directories[parsed.path] = directory
                 return new_url
-            else:
-                directory = directories[parsed.path]
 
-            new_param = False
-            for key, values in parse_qs(parsed.query).items():
-                if any(v not in directory.url_parameters[key] for v in values):
-                    new_param = True
-                directory.url_parameters[key].update(values)
-            if new_param:
-                return new_url
-
-        async def crawl(curr_url: str, depth: int):
+        async def crawl(method: str, curr_url: str, params: dict[str, str], depth: int):
             if depth > args.depth:
                 return
 
+            crawl_tasks = []
             try:
-                async with session.get(curr_url, **get_req_kwargs(args), allow_redirects=False) as response:
+                params_kwargs = {"params": params} if method == "get" else {"data": params}
+                async with session.request(method, curr_url, **params_kwargs, **get_req_kwargs(args), allow_redirects=False) as response:
+                    if response.status == 404:
+                        return
+
                     try:
                         html = await response.text()
                     except UnicodeDecodeError:
@@ -83,45 +102,34 @@ class Crawler(Module):
                         emails.add(match)
                     for match in HTML_COMMENT_REGEX.findall(html):
                         comments.add(match.strip())
+
                     for form in soup.find_all("form"):
-                        method, action, params = parse_form(form)
-                        path = urlparse(urljoin(curr_url, action)).path
-
-                        if path not in directories:
-                            directory = Directory(path)
-                            directories[path] = directory
-                        else:
-                            directory = directories[path]
-
-                        for name, value in params.items():
-                            if method.casefold() == "post":
-                                directory.post_parameters[name].add(value)
-                            elif method.casefold() == "get":
-                                directory.url_parameters[name].add(value)
-
-                    urls = set()
+                        form_method, form_action, form_params = parse_form(form)
+                        new_url = add_to_directories(form_method, form_action, curr_url, form_params)
+                        if new_url is not None:
+                            crawl_tasks.append(crawl(form_method, new_url, form_params, depth + 1))
 
                     if "Location" in response.headers:
                         location = response.headers["Location"]
-                        new_url = add_to_directories(location, curr_url)
+                        new_url = add_to_directories("get", location, curr_url)
                         if new_url is not None:
-                            urls.add(new_url)
+                            crawl_tasks.append(crawl("get", new_url, dict(), depth + 1, ))
 
                     for link in soup.find_all("a"):
                         href = link.get("href")
                         if href is None:
                             continue
-                        new_url = add_to_directories(href, curr_url)
+                        new_url = add_to_directories("get", href, curr_url)
                         if new_url is not None:
-                            urls.add(new_url)
+                            crawl_tasks.append(crawl("get", new_url, dict(), depth + 1))
 
-                    await asyncio.gather(*[crawl(new_url, depth + 1) for new_url in urls])
+                    await asyncio.gather(*crawl_tasks)
             except (aiohttp.ClientError, asyncio.TimeoutError):
                 pass
 
-        add_to_directories("", args.url)
+        add_to_directories("get", "", args.url)
 
-        await crawl(args.url, 1)
+        await crawl("get", args.url, dict(), 1)
 
         result = {"directories": {d.directory: d.json() for d in directories.values()}}
         if emails:

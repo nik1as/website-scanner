@@ -92,6 +92,13 @@ def parse_form(form: bs4.element.Tag):
             continue
         value = input_tag.get("value", "")
         args[name] = value
+    for select_tag in form.findAll("select"):
+        name = select_tag.get("name", None)
+        if name is None:
+            continue
+        option_tag = select_tag.find("option")
+        value = option_tag.get_text() if option_tag else None
+        args[name] = value
     return method, action, args
 
 
