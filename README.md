@@ -11,6 +11,7 @@ A fast and powerful web enumeration tool for CTFs.
 - favicon fingerprint
 - interesting headers
 - directory enumeration
+- subdomain enumeration
 - technology identification
 - scan for vulnerabilities
   - Command Injection
