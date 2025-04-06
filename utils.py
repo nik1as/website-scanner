@@ -1,3 +1,4 @@
+import ipaddress
 import os
 import traceback
 from collections import defaultdict
@@ -42,6 +43,7 @@ def unique_not_none(seq):
     if None in results:
         results.remove(None)
     return list(results)
+
 
 def not_none(seq):
     return [e for e in seq if e is not None]
@@ -113,3 +115,11 @@ def change_url_param_value(url: str, param: str, new_value: str):
 def url_parameters(url: str):
     parsed = urlparse(url)
     return list(parse_qs(parsed.query).keys())
+
+
+def is_ip_address(hostname: str) -> bool:
+    try:
+        ipaddress.ip_address(hostname)
+        return True
+    except ValueError:
+        return False

@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 import aiohttp
 
 from modules import Module
-from utils import get_req_kwargs
+from utils import get_req_kwargs, is_ip_address
 
 with open("data/subdomains.txt", "r") as f:
     SUBDOMAINS = [line.strip() for line in f.readlines()]
@@ -31,5 +31,8 @@ class Subdomains(Module):
             return
 
     async def run(self, session: aiohttp.ClientSession, args):
+        if is_ip_address(urlparse(args.url).hostname):
+            return
+
         results = await asyncio.gather(*[self.check(session, subdomain, args) for subdomain in SUBDOMAINS])
         return [result for result in results if result is not None]
