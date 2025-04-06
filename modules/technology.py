@@ -5,9 +5,9 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 from modules import Module
-from utils import get_req_kwargs
+from utils import get_req_kwargs, set_cpe_version
 
-NO_VERSION_FOUND = " "
+NO_VERSION_FOUND = None
 
 with open("data/technologies.json", "r") as f:
     TECHNOLOGIES = json.load(f)
@@ -111,5 +111,26 @@ class Technology(Module):
                 version = match_list(spec.get("scriptSrc", []), script_src)
                 if version is not None:
                     add_app(results, name, version, spec)
+
+            for category in results:
+                for tech in results[category]:
+                    version = results[category][tech]
+                    results[category][tech] = dict()
+                    if version != NO_VERSION_FOUND:
+                        results[category][tech]["version"] = version
+
+                    cpe = TECHNOLOGIES[tech].get("cpe", None)
+                    if cpe is not None:
+                        if version != NO_VERSION_FOUND:
+                            cpe = set_cpe_version(cpe, version)
+                        results[category][tech]["cpe"] = cpe
+
+                    description = TECHNOLOGIES[tech].get("description", None)
+                    if description is not None:
+                        results[category][tech]["description"] = description
+
+                    website = TECHNOLOGIES[tech].get("website", None)
+                    if website is not None:
+                        results[category][tech]["website"] = website
 
             return results
