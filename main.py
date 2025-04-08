@@ -7,6 +7,7 @@ import aiohttp
 from aiohttp import BasicAuth
 
 from modules import Module
+from techs import TechnologyModule
 from utils import print_json_tree, group_dicts
 from vulns import VulnerabilityModule
 
@@ -53,7 +54,17 @@ async def main():
                                      auth=auth) as session:
         tasks = [module().start(session, args) for module in Module.modules]
         results = await asyncio.gather(*tasks)
+        for name, result in results:
+            if result:
+                output[name] = result
 
+        technology_modules = [tech() for tech in TechnologyModule.modules]
+        techs = {tech.lower() for category in output["technology"] for tech in output["technology"][category]}
+        tasks = []
+        for tech_module in technology_modules:
+            if tech_module.name in techs:
+                tasks.append(tech_module.start(session, args))
+        results = await asyncio.gather(*tasks)
         for name, result in results:
             if result:
                 output[name] = result

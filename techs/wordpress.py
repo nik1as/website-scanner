@@ -5,32 +5,16 @@ from urllib.parse import urljoin, urlparse, parse_qsl
 import aiohttp
 from bs4 import BeautifulSoup
 
-from modules import Module
+from techs import TechnologyModule
 from utils import get_req_kwargs
 
 GENERATOR_REGEX = r"wordpress(?: ([\d.]+))?"
 
 
-class Wordpress(Module):
+class Wordpress(TechnologyModule):
 
     def __init__(self):
         super().__init__("wordpress")
-
-    async def enumerate_users(self, session: aiohttp.ClientSession, args):
-        users = {}
-        for user_id in args.wordpress_user_ids:
-            async with session.get(urljoin(args.url, f"/?author={user_id}"), **get_req_kwargs(args)) as response:
-                html = await response.text()
-                name = BeautifulSoup(html, "html.parser").find("title").text
-                if response.status == 200 or 300 <= response.status <= 399:
-                    users[user_id] = name
-        return users
-
-    async def check_xmlrpc(self, session: aiohttp.ClientSession, args):
-        async with session.get(urljoin(args.url, "/xmlrpc.php"), **get_req_kwargs(args)) as response:
-            if response.status >= 400:
-                return "enabled"
-        return "disabled"
 
     async def run(self, session: aiohttp.ClientSession, args):
         result = {}
@@ -43,8 +27,6 @@ class Wordpress(Module):
                     if match is not None:
                         result["version"] = match.group(1)
                         break
-            else:
-                return
 
             plugins = {}
             hrefs = [tag["href"] for tag in soup.find_all(href=True)]
@@ -70,3 +52,19 @@ class Wordpress(Module):
             result["xml-rpc"] = await self.check_xmlrpc(session, args)
             result["users"] = await self.enumerate_users(session, args)
             return result
+
+    async def check_xmlrpc(self, session: aiohttp.ClientSession, args):
+        async with session.get(urljoin(args.url, "/xmlrpc.php"), **get_req_kwargs(args)) as response:
+            if response.status >= 400:
+                return "enabled"
+        return "disabled"
+
+    async def enumerate_users(self, session: aiohttp.ClientSession, args):
+        users = {}
+        for user_id in args.wordpress_user_ids:
+            async with session.get(urljoin(args.url, f"/?author={user_id}"), **get_req_kwargs(args)) as response:
+                html = await response.text()
+                name = BeautifulSoup(html, "html.parser").find("title").text.rsplit(" – ", 1)[0]
+                if response.status == 200 or 300 <= response.status <= 399:
+                    users[user_id] = name
+        return users
