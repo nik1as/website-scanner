@@ -6,6 +6,7 @@ import json
 import aiohttp
 from aiohttp import BasicAuth
 
+from http_client import HTTPClient, ExponentialRetry
 from modules import Module
 from techs import TechnologyModule
 from utils import print_json_tree, group_dicts
@@ -18,14 +19,16 @@ def parse_args():
     parser.add_argument("-u", "--url", type=str, required=True, help="URL to scan")
     parser.add_argument("-o", "--output", type=str, required=False, help="Output json file")
     parser.add_argument("-c", "--cookie", type=str, required=False, default="", help="Cookie")
+    parser.add_argument("-a", "--user-agent", type=str, required=False, default="website-scanner/1.0", help="User Agent")
+    parser.add_argument("-H", "--headers", type=str, required=False, nargs="*", default=[], help="HTTP Headers")
     parser.add_argument("-t", "--timeout", type=int, required=False, default=60, help="Timeout")
+    parser.add_argument("-r", "--retries", type=int, required=False, default=3, help="Number of retries")
+    parser.add_argument("-l", "--rate-limit", type=int, required=False, help="Limits the number of HTTP requests per second")
+    parser.add_argument("-d", "--depth", type=int, required=False, default=3, help="Maximum crawler depth")
     parser.add_argument("-i", "--ignore", type=str, required=False, nargs="*", default=["/logout"], help="Directories to ignore e.g. /logout")
-    parser.add_argument("--user-agent", type=str, required=False, default="webscan", help="User Agent")
-    parser.add_argument("--depth", type=int, required=False, default=3, help="Maximum crawler depth")
     parser.add_argument("--proxy", type=str, required=False, help="Proxy server")
     parser.add_argument("--auth", type=str, required=False, help="Basic Authentication <username>:<password>")
-
-    parser.add_argument("--vulns", required=False, action="store_true", help="Scan for vulnerabilities")
+    parser.add_argument("--vulnerabilities", required=False, action="store_true", help="Scan for vulnerabilities")
     parser.add_argument("--confidence-threshold", type=int, required=False, default=80, help="Threshold for the technology identification (0-100)")
     parser.add_argument("--lfi-depth", type=int, required=False, default=5, help="Maximum LFI depth")
     parser.add_argument("--wordpress-user-ids", type=int, nargs="+", required=False, default=list(range(1, 20)), help="Wordpress user IDs")
@@ -41,6 +44,11 @@ async def main():
         headers["cookie"] = args.cookie
     if args.user_agent:
         headers["user-agent"] = args.user_agent
+    for header in args.headers:
+        if ":" not in header:
+            continue
+        name, value = map(str.strip, header.split(":", 1))
+        headers[name] = value
 
     auth = None
     if args.auth is not None:
@@ -48,10 +56,12 @@ async def main():
         auth = BasicAuth(username, password)
 
     output = dict()
-    async with aiohttp.ClientSession(headers=headers,
-                                     timeout=aiohttp.ClientTimeout(args.timeout),
-                                     connector=aiohttp.TCPConnector(ssl=False),
-                                     auth=auth) as session:
+    async with HTTPClient(retry_options=ExponentialRetry(attempts=args.retries),
+                          rate_limit=args.rate_limit,
+                          headers=headers,
+                          timeout=aiohttp.ClientTimeout(args.timeout),
+                          connector=aiohttp.TCPConnector(ssl=False),
+                          auth=auth) as session:
         tasks = [module().start(session, args) for module in Module.modules]
         results = await asyncio.gather(*tasks)
         for name, result in results:
@@ -69,19 +79,12 @@ async def main():
             if result:
                 output[name] = result
 
-    if args.vulns:
-        async with aiohttp.ClientSession(headers=headers,
-                                         timeout=aiohttp.ClientTimeout(args.timeout),
-                                         connector=aiohttp.TCPConnector(ssl=False),
-                                         auth=auth) as session:
+        if args.vulnerabilities:
             output["vulnerabilities"] = []
-
             dirs = output["crawler"]["directories"]
             tasks = [vuln().run(session, args, dirs) for vuln in VulnerabilityModule.modules]
-            results = await asyncio.gather(*tasks)
-            results = list(itertools.chain(*results))
-            results = group_dicts(results, "payload")
-            output["vulnerabilities"] = results
+            results = list(itertools.chain(*(await asyncio.gather(*tasks))))
+            output["vulnerabilities"] = group_dicts(results, "payload")
 
     for title, result in sorted(output.items()):
         print("=" * 5 + " " + title.upper() + " " + "=" * 5)
