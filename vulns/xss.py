@@ -19,7 +19,8 @@ class XSS(VulnerabilityModule):
 
             async with session.request(method, urljoin(args.url, path), **params_kwargs) as response:
                 text = await response.text()
-                if payload in text:
+                content_type = response.headers["Content-Type"].split(";")[0].strip()
+                if payload in text and content_type == "text/html":
                     return {"type": "XSS", "method": method, "path": path, "param": param, "payload": payload}
                 if response.status >= 500:
                     return {"type": "ERROR", "status": response.status, "method": method, "path": path, "param": param, "payload": payload}
