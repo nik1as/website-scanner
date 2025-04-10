@@ -1,3 +1,4 @@
 aiohttp
 aiolimiter
 beautifulsoup4
+PyYAML
