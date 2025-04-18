@@ -9,7 +9,7 @@ from aiohttp import BasicAuth, TCPConnector, ClientTimeout
 
 from website_scanner import __version__
 from website_scanner.http_client import HTTPClient, ExponentialRetry
-from website_scanner.modules import Module
+from website_scanner.info import InformationModule
 from website_scanner.techs import TechnologyModule
 from website_scanner.utils import print_json_tree, group_dicts
 from website_scanner.vulns import VulnerabilityModule
@@ -39,6 +39,12 @@ def parse_args():
     return parser.parse_args()
 
 
+def print_module_result(name: str, result):
+    print("=" * 5 + " " + name.upper() + " " + "=" * 5)
+    print_json_tree(result)
+    print()
+
+
 async def website_scanner():
     args = parse_args()
 
@@ -65,11 +71,12 @@ async def website_scanner():
                           timeout=ClientTimeout(args.timeout),
                           connector=TCPConnector(ssl=False),
                           auth=auth) as session:
-        tasks = [module().start(session, args) for module in Module.modules]
-        results = await asyncio.gather(*tasks)
-        for name, result in results:
+        tasks = [module().start(session, args) for module in InformationModule.modules]
+        for coro in asyncio.as_completed(tasks):
+            name, result = await coro
             if result:
                 output[name] = result
+                print_module_result(name, result)
 
         if "technology" in output:
             technology_modules = [tech() for tech in TechnologyModule.modules]
@@ -78,22 +85,20 @@ async def website_scanner():
             for tech_module in technology_modules:
                 if tech_module.name in techs:
                     tasks.append(tech_module.start(session, args))
-            results = await asyncio.gather(*tasks)
-            for name, result in results:
+            for coro in asyncio.as_completed(tasks):
+                name, result = await coro
                 if result:
                     output[name] = result
+                    print_module_result(name, result)
 
         if args.vulnerabilities:
             output["vulnerabilities"] = []
             dirs = output["crawler"]["directories"]
             tasks = [vuln().run(session, args, dirs) for vuln in VulnerabilityModule.modules]
             results = list(itertools.chain(*(await asyncio.gather(*tasks))))
-            output["vulnerabilities"] = group_dicts(results, "payload")
-
-    for title, result in sorted(output.items()):
-        print("=" * 5 + " " + title.upper() + " " + "=" * 5)
-        print_json_tree(result)
-        print()
+            results = group_dicts(results, "payload")
+            output["vulnerabilities"] = results
+            print_module_result("vulnerabilities", results)
 
     if args.output is not None:
         with open(args.output, "w") as outfile:

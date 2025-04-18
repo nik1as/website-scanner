@@ -3,11 +3,11 @@ from urllib.parse import urljoin
 
 import aiohttp
 
-from website_scanner.modules import Module
+from website_scanner.info import InformationModule
 from website_scanner.utils import get_req_kwargs
 
 
-class Git(Module):
+class Git(InformationModule):
 
     def __init__(self):
         super().__init__("git")

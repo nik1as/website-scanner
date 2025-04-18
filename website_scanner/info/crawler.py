@@ -5,7 +5,7 @@ from urllib.parse import urlparse, parse_qs, urljoin
 import aiohttp
 from bs4 import BeautifulSoup
 
-from website_scanner.modules import Module
+from website_scanner.info import InformationModule
 from website_scanner.regex import EMAIL_REGEX, HTML_COMMENT_REGEX
 from website_scanner.utils import parse_form, get_req_kwargs
 
@@ -50,7 +50,7 @@ class Directory:
         return result
 
 
-class Crawler(Module):
+class Crawler(InformationModule):
 
     def __init__(self):
         super().__init__("crawler")

@@ -1,11 +1,11 @@
 import aiohttp
 from bs4 import BeautifulSoup
 
-from website_scanner.modules import Module
+from website_scanner.info import InformationModule
 from website_scanner.utils import get_req_kwargs
 
 
-class Basic(Module):
+class Basic(InformationModule):
 
     def __init__(self):
         super().__init__("basic")

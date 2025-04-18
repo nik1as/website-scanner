@@ -6,7 +6,7 @@ import aiohttp
 from website_scanner.utils import load_modules
 
 
-class Module(ABC):
+class InformationModule(ABC):
     modules = []
 
     def __init__(self, name: str):

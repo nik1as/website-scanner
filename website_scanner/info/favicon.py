@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 import aiohttp
 from bs4 import BeautifulSoup
 
-from website_scanner.modules import Module
+from website_scanner.info import InformationModule
 from website_scanner.utils import get_req_kwargs
 
 database_path = files("website_scanner.data").joinpath("favicon-database.json")
@@ -14,7 +14,7 @@ with database_path.open("r", encoding="utf-8") as f:
     DATABASE = json.load(f)
 
 
-class Favicon(Module):
+class Favicon(InformationModule):
 
     def __init__(self):
         super().__init__("favicon")

@@ -7,14 +7,14 @@ from urllib.parse import urljoin
 
 import aiohttp
 
-from website_scanner.modules import Module
+from website_scanner.info import InformationModule
 
 database_path = files("website_scanner.data").joinpath("404.json")
 with database_path.open("r", encoding="utf-8") as f:
     DATABASE = json.load(f)
 
 
-class NotFoundPage(Module):
+class NotFoundPage(InformationModule):
 
     def __init__(self):
         super().__init__("not-found-page")

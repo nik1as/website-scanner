@@ -2,11 +2,11 @@ from urllib.parse import urljoin
 
 import aiohttp
 
-from website_scanner.modules import Module
+from website_scanner.info import InformationModule
 from website_scanner.utils import get_req_kwargs
 
 
-class Robots(Module):
+class Robots(InformationModule):
 
     def __init__(self):
         super().__init__("robots.txt")

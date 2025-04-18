@@ -1,6 +1,6 @@
 import aiohttp
 
-from website_scanner.modules import Module
+from website_scanner.info import InformationModule
 from website_scanner.utils import get_req_kwargs
 
 INTERESTING_HEADERS = ["Server", "X-Powered-By", "Via", "X-AspNet-Version", "X-Backend-Server", "X-Powered-CMS", "X-PHP-Version", "X-Drupal-Cache",
@@ -8,7 +8,7 @@ INTERESTING_HEADERS = ["Server", "X-Powered-By", "Via", "X-AspNet-Version", "X-B
                        "Strict-Transport-Security", "X-Runtime", "X-Version", "X-Cache", "X-Backend"]
 
 
-class Headers(Module):
+class Headers(InformationModule):
 
     def __init__(self):
         super().__init__("headers")

@@ -8,7 +8,7 @@ from itertools import takewhile
 import aiohttp
 from bs4 import BeautifulSoup
 
-from website_scanner.modules import Module
+from website_scanner.info import InformationModule
 from website_scanner.utils import get_req_kwargs, set_cpe_version
 
 technologies_path = files("website_scanner.data").joinpath("technologies.json")
@@ -110,7 +110,7 @@ def detect(spec, response, html, soup) -> tuple[bool, int, set[str]]:
     return match, min(total_confidence, 100), versions
 
 
-class Technology(Module):
+class Technology(InformationModule):
 
     def __init__(self):
         super().__init__("technology")

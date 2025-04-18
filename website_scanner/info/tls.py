@@ -5,10 +5,10 @@ from urllib.parse import urlparse
 
 import aiohttp
 
-from website_scanner.modules import Module
+from website_scanner.info import InformationModule
 
 
-class TLS(Module):
+class TLS(InformationModule):
 
     def __init__(self):
         super().__init__("tls")
