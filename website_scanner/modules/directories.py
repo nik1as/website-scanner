@@ -1,12 +1,14 @@
 import asyncio
+from importlib.resources import files
 from urllib.parse import urljoin
 
 import aiohttp
 
-from modules import Module
-from utils import get_req_kwargs
+from website_scanner.modules import Module
+from website_scanner.utils import get_req_kwargs
 
-with open("data/directories.txt", "r") as f:
+directories_path = files("website_scanner.data").joinpath("directories.txt")
+with directories_path.open("r", encoding="utf-8") as f:
     DIRECTORIES = [line.strip() for line in f.readlines()]
 
 

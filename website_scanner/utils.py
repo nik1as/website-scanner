@@ -124,6 +124,7 @@ def is_ip_address(hostname: str) -> bool:
     except ValueError:
         return False
 
+
 def set_cpe_version(cpe_str: str, version: str) -> str:
     if not cpe_str.startswith("cpe:2.3:"):
         raise ValueError("Only CPE 2.3 format is supported")

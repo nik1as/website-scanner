@@ -1,8 +1,8 @@
 import aiohttp
 from bs4 import BeautifulSoup
 
-from modules import Module
-from utils import get_req_kwargs
+from website_scanner.modules import Module
+from website_scanner.utils import get_req_kwargs
 
 
 class Basic(Module):

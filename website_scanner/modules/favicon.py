@@ -1,14 +1,16 @@
 import hashlib
 import json
+from importlib.resources import files
 from urllib.parse import urljoin
 
 import aiohttp
 from bs4 import BeautifulSoup
 
-from modules import Module
-from utils import get_req_kwargs
+from website_scanner.modules import Module
+from website_scanner.utils import get_req_kwargs
 
-with open("data/favicon-database.json") as f:
+database_path = files("website_scanner.data").joinpath("favicon-database.json")
+with database_path.open("r", encoding="utf-8") as f:
     DATABASE = json.load(f)
 
 

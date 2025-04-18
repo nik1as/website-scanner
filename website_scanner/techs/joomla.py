@@ -4,7 +4,7 @@ from urllib.parse import urljoin
 import aiohttp
 from bs4 import BeautifulSoup
 
-from techs import TechnologyModule
+from website_scanner.techs import TechnologyModule
 
 
 class Joomla(TechnologyModule):

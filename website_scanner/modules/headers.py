@@ -1,7 +1,7 @@
 import aiohttp
 
-from modules import Module
-from utils import get_req_kwargs
+from website_scanner.modules import Module
+from website_scanner.utils import get_req_kwargs
 
 INTERESTING_HEADERS = ["Server", "X-Powered-By", "Via", "X-AspNet-Version", "X-Backend-Server", "X-Powered-CMS", "X-PHP-Version", "X-Drupal-Cache",
                        "X-Joomla-Version", "X-Generator", "X-Content-Type-Options", "X-XSS-Protection", "X-Frame-Options", "Content-Security-Policy",

@@ -1,12 +1,14 @@
 import asyncio
+from importlib.resources import files
 from urllib.parse import urlparse
 
 import aiohttp
 
-from modules import Module
-from utils import get_req_kwargs, is_ip_address
+from website_scanner.modules import Module
+from website_scanner.utils import get_req_kwargs, is_ip_address
 
-with open("data/subdomains.txt", "r") as f:
+subdomains_path = files("website_scanner.data").joinpath("subdomains.txt")
+with subdomains_path.open("r", encoding="utf-8") as f:
     SUBDOMAINS = [line.strip() for line in f.readlines()]
 
 

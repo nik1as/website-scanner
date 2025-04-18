@@ -1,25 +1,28 @@
+#!/usr/bin/env python
+
 import argparse
 import asyncio
 import itertools
 import json
 
-import aiohttp
-from aiohttp import BasicAuth
+from aiohttp import BasicAuth, TCPConnector, ClientTimeout
 
-from http_client import HTTPClient, ExponentialRetry
-from modules import Module
-from techs import TechnologyModule
-from utils import print_json_tree, group_dicts
-from vulns import VulnerabilityModule
+from website_scanner import __version__
+from website_scanner.http_client import HTTPClient, ExponentialRetry
+from website_scanner.modules import Module
+from website_scanner.techs import TechnologyModule
+from website_scanner.utils import print_json_tree, group_dicts
+from website_scanner.vulns import VulnerabilityModule
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Scan a website",
                                      formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=70))
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument("-u", "--url", type=str, required=True, help="URL to scan")
     parser.add_argument("-o", "--output", type=str, required=False, help="Output json file")
     parser.add_argument("-c", "--cookie", type=str, required=False, default="", help="Cookie")
-    parser.add_argument("-a", "--user-agent", type=str, required=False, default="website-scanner/1.0", help="User Agent")
+    parser.add_argument("-a", "--user-agent", type=str, required=False, default=f"website-scanner/{__version__}", help="User Agent")
     parser.add_argument("-H", "--headers", type=str, required=False, nargs="*", default=[], help="HTTP Headers")
     parser.add_argument("-t", "--timeout", type=int, required=False, default=60, help="Timeout")
     parser.add_argument("-r", "--retries", type=int, required=False, default=3, help="Number of retries")
@@ -36,7 +39,7 @@ def parse_args():
     return parser.parse_args()
 
 
-async def main():
+async def website_scanner():
     args = parse_args()
 
     headers = dict()
@@ -48,7 +51,7 @@ async def main():
         if ":" not in header:
             continue
         name, value = map(str.strip, header.split(":", 1))
-        headers[name] = value
+        headers[name.lower()] = value
 
     auth = None
     if args.auth is not None:
@@ -59,8 +62,8 @@ async def main():
     async with HTTPClient(retry_options=ExponentialRetry(attempts=args.retries),
                           rate_limit=args.rate_limit,
                           headers=headers,
-                          timeout=aiohttp.ClientTimeout(args.timeout),
-                          connector=aiohttp.TCPConnector(ssl=False),
+                          timeout=ClientTimeout(args.timeout),
+                          connector=TCPConnector(ssl=False),
                           auth=auth) as session:
         tasks = [module().start(session, args) for module in Module.modules]
         results = await asyncio.gather(*tasks)
@@ -68,16 +71,17 @@ async def main():
             if result:
                 output[name] = result
 
-        technology_modules = [tech() for tech in TechnologyModule.modules]
-        techs = {tech.lower() for category in output["technology"] for tech in output["technology"][category]}
-        tasks = []
-        for tech_module in technology_modules:
-            if tech_module.name in techs:
-                tasks.append(tech_module.start(session, args))
-        results = await asyncio.gather(*tasks)
-        for name, result in results:
-            if result:
-                output[name] = result
+        if "technology" in output:
+            technology_modules = [tech() for tech in TechnologyModule.modules]
+            techs = {tech.lower() for category in output["technology"] for tech in output["technology"][category]}
+            tasks = []
+            for tech_module in technology_modules:
+                if tech_module.name in techs:
+                    tasks.append(tech_module.start(session, args))
+            results = await asyncio.gather(*tasks)
+            for name, result in results:
+                if result:
+                    output[name] = result
 
         if args.vulnerabilities:
             output["vulnerabilities"] = []
@@ -96,5 +100,9 @@ async def main():
             json.dump(output, outfile, indent=2)
 
 
+def main():
+    asyncio.run(website_scanner())
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

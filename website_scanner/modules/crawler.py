@@ -5,9 +5,9 @@ from urllib.parse import urlparse, parse_qs, urljoin
 import aiohttp
 from bs4 import BeautifulSoup
 
-from modules import Module
-from regex import EMAIL_REGEX, HTML_COMMENT_REGEX
-from utils import parse_form, get_req_kwargs
+from website_scanner.modules import Module
+from website_scanner.regex import EMAIL_REGEX, HTML_COMMENT_REGEX
+from website_scanner.utils import parse_form, get_req_kwargs
 
 
 class Directory:

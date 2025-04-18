@@ -1,14 +1,16 @@
 import asyncio
 import json
 import random
+from importlib.resources import files
 from urllib.parse import urljoin
 
 import aiohttp
 
-from utils import not_none
-from vulns import VulnerabilityModule
+from website_scanner.utils import not_none
+from website_scanner.vulns import VulnerabilityModule
 
-with open("data/payloads/ssti.json") as f:
+payloads_path = files("website_scanner.data").joinpath("payloads", "ssti.json")
+with payloads_path.open("r", encoding="utf-8") as f:
     PAYLOADS = json.load(f)
 
 

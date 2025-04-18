@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 import aiohttp
 
-from utils import load_modules
+from website_scanner.utils import load_modules
 
 
 class VulnerabilityModule(ABC):

@@ -3,8 +3,8 @@ from urllib.parse import urljoin
 
 import aiohttp
 
-from modules import Module
-from utils import get_req_kwargs
+from website_scanner.modules import Module
+from website_scanner.utils import get_req_kwargs
 
 
 class Git(Module):

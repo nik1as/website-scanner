@@ -2,17 +2,21 @@ import itertools
 import json
 import re
 from collections import defaultdict
+from importlib.resources import files
 from itertools import takewhile
 
 import aiohttp
 from bs4 import BeautifulSoup
 
-from modules import Module
-from utils import get_req_kwargs, set_cpe_version
+from website_scanner.modules import Module
+from website_scanner.utils import get_req_kwargs, set_cpe_version
 
-with open("data/technologies.json", "r") as f:
+technologies_path = files("website_scanner.data").joinpath("technologies.json")
+with technologies_path.open("r", encoding="utf-8") as f:
     TECHNOLOGIES = json.load(f)
-with open("data/categories.json", "r") as f:
+
+categories_path = files("website_scanner.data").joinpath("categories.json")
+with categories_path.open("r", encoding="utf-8") as f:
     CATEGORIES = json.load(f)
 
 

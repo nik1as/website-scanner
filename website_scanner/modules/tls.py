@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 import aiohttp
 
-from modules import Module
+from website_scanner.modules import Module
 
 
 class TLS(Module):

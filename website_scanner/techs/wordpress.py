@@ -5,8 +5,8 @@ from urllib.parse import urljoin, urlparse, parse_qsl
 import aiohttp
 from bs4 import BeautifulSoup
 
-from techs import TechnologyModule
-from utils import get_req_kwargs
+from website_scanner.techs import TechnologyModule
+from website_scanner.utils import get_req_kwargs
 
 GENERATOR_REGEX = r"wordpress(?: ([\d.]+))?"
 

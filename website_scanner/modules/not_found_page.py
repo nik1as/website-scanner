@@ -2,13 +2,15 @@ import json
 import random
 import re
 import string
+from importlib.resources import files
 from urllib.parse import urljoin
 
 import aiohttp
 
-from modules import Module
+from website_scanner.modules import Module
 
-with open("data/404.json", "r") as f:
+database_path = files("website_scanner.data").joinpath("404.json")
+with database_path.open("r", encoding="utf-8") as f:
     DATABASE = json.load(f)
 
 
