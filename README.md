@@ -4,39 +4,48 @@ A fast and powerful web enumeration tool for CTFs.
 
 ## Modules
 
-- basic information (title, generator, redirects)
-- crawler (directories, forms, emails, comments)
-- robots.txt
-- git
-- favicon fingerprint
-- interesting headers
-- directory enumeration
-- subdomain enumeration
-- technology identification
-- scan for vulnerabilities
-  - Command Injection
-  - SQL-Injection (error-based)
-  - XSS
-  - SSTI
-  - File Inclusion
+- information
+  - basic: title, generator, redirects
+  - cookies: secure and httponly flag
+  - crawler: directories, forms, emails, comments
+  - directories: directory enumeration
+  - favicon: favicon fingerprinting
+  - git: check for git repo
+  - headers: interesting http headers
+  - methods: allowed http methods
+  - not_found_page: 404 page fingerprinting
+  - robots: parse robots.txt
+  - subdomains: subdomain enumeration
+  - technology: technology identification
+  - tls: show certificate information
+- vulnerabilities
+  - command_injection: Command Injection
+  - lfi: Local File Inclusion
+  - sqli: error-based SQL injection
+  - ssti: Server-side template injection
+  - xss: Cross Site Scripting
+- technologies
+  - wordpress
+  - joomla
 
 ## Installation
 
+### Install Globally with pipx
+
+```
+pipx install git+https://github.com/nik1as/website-scanner.git
+  
+website-scanner --url "http://10.x.x.x/"
+```
+
 ### Run in a Virtual Environment
+
 ```
 python3 -m venv .venv
 source .venv/bin/activate
 pip3 install -r requirements.txt
 
 python3 -m website_scanner.main -u "http://10.x.x.x/"
-```
-
-### Install Globally with pipx
-
-```
-pipx install .
-
-website-scanner --url "http://10.x.x.x/"
 ```
 
 ## Usage
@@ -72,6 +81,7 @@ options:
   --lfi-depth LFI_DEPTH                                             Maximum LFI depth
   --wordpress-user-ids WORDPRESS_USER_IDS [WORDPRESS_USER_IDS ...]  Wordpress user IDs
 ```
+
 ## Credit
 
 - [webappanalyzer](https://github.com/enthec/webappanalyzer)

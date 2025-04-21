@@ -16,7 +16,12 @@ dependencies = [
 website-scanner = "website_scanner.main:main"
 
 [tool.setuptools]
-packages = ["website_scanner"]
+packages = [
+    "website_scanner",
+    "website_scanner.info",
+    "website_scanner.techs",
+    "website_scanner.vulns"
+]
 include-package-data = true
 
 [tool.setuptools.package-data]
