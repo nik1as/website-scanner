@@ -61,48 +61,6 @@
         "content": [
           "127.0.0.1    localhost"
         ]
-      },
-      {
-        "path": [
-          "etc",
-          "motd"
-        ],
-        "content": [
-          "ABSOLUTELY NO WARRANTY",
-          "Linux system are free software"
-        ]
-      },
-      {
-        "path": [
-          "proc",
-          "self",
-          "environ"
-        ],
-        "content": [
-          "LS_COLORS=",
-          "HOME=/home/"
-        ]
-      },
-      {
-        "path": [
-          "proc",
-          "version"
-        ],
-        "content": [
-          "gcc version",
-          "SSH_TTY=",
-          "SSH_CONNECTION="
-        ]
-      },
-      {
-        "path": [
-          "proc",
-          "cmdline"
-        ],
-        "content": [
-          "BOOT_IMAGE=",
-          "biosdevname="
-        ]
       }
     ]
   },
@@ -149,17 +107,6 @@
       {
         "path": [
           "WINDOWS",
-          "php.ini"
-        ],
-        "content": [
-          "About php.ini",
-          "log_errors",
-          "output_buffering"
-        ]
-      },
-      {
-        "path": [
-          "WINDOWS",
           "system32",
           "drivers",
           "etc",
@@ -167,28 +114,6 @@
         ],
         "content": [
           "127.0.0.1    localhost"
-        ]
-      },
-      {
-        "path": [
-          "WINNT",
-          "php.ini"
-        ],
-        "content": [
-          "About php.ini",
-          "log_errors",
-          "output_buffering"
-        ]
-      },
-      {
-        "path": [
-          "php",
-          "php.ini"
-        ],
-        "content": [
-          "About php.ini",
-          "log_errors",
-          "output_buffering"
         ]
       }
     ]

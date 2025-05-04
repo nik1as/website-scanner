@@ -2,32 +2,6 @@
 
 A fast and powerful web enumeration tool for CTFs.
 
-## Modules
-
-- information
-  - basic: title, generator, redirects
-  - cookies: secure and httponly flag
-  - crawler: directories, forms, emails, comments
-  - directories: directory enumeration
-  - favicon: favicon fingerprinting
-  - git: check for git repo
-  - headers: interesting http headers
-  - methods: allowed http methods
-  - not_found_page: 404 page fingerprinting
-  - robots: parse robots.txt
-  - subdomains: subdomain enumeration
-  - technology: technology identification
-  - tls: show certificate information
-- vulnerabilities
-  - command_injection: Command Injection
-  - lfi: Local File Inclusion
-  - sqli: error-based SQL injection
-  - ssti: Server-side template injection
-  - xss: Cross Site Scripting
-- technologies
-  - wordpress
-  - joomla
-
 ## Installation
 
 ### Install Globally with pipx
@@ -81,6 +55,32 @@ options:
   --lfi-depth LFI_DEPTH                                             Maximum LFI depth
   --wordpress-user-ids WORDPRESS_USER_IDS [WORDPRESS_USER_IDS ...]  Wordpress user IDs
 ```
+
+## Modules
+
+- information
+  - basic: title, generator, redirects
+  - cookies: secure and httponly flag
+  - crawler: directories, forms, emails, comments
+  - directories: directory enumeration
+  - favicon: favicon fingerprinting
+  - git: check for git repo
+  - headers: interesting http headers
+  - methods: allowed http methods
+  - not_found_page: 404 page fingerprinting
+  - robots: parse robots.txt
+  - subdomains: subdomain enumeration
+  - technology: technology identification
+  - tls: show certificate information
+- vulnerabilities
+  - command_injection: Command Injection
+  - lfi: Local File Inclusion
+  - sqli: error-based SQL injection
+  - ssti: Server-side template injection
+  - xss: Cross Site Scripting
+- technologies
+  - wordpress
+  - joomla
 
 ## Credit
 

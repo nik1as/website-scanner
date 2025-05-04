@@ -29,7 +29,7 @@ def parse_args():
     parser.add_argument("-l", "--rate-limit", type=int, required=False, help="Limits the number of HTTP requests per second")
     parser.add_argument("-d", "--depth", type=int, required=False, default=3, help="Maximum crawler and directory enumeration depth")
     parser.add_argument("-i", "--ignore", type=str, required=False, nargs="*", default=["/logout"], help="Directories to ignore e.g. /logout")
-    parser.add_argument("--proxy", type=str, required=False, help="Proxy server")
+    parser.add_argument("--proxy", type=str, required=False, help="HTTP Proxy")
     parser.add_argument("--auth", type=str, required=False, help="Basic Authentication <username>:<password>")
     parser.add_argument("--recursive", required=False, default=False, action="store_true", help="Recursive directory enumeration")
     parser.add_argument("--extensions", type=str, required=False, nargs="*", default=[], help="File extensions for directory enumeration")
