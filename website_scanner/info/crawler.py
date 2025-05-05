@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 from website_scanner.info import InformationModule
 from website_scanner.regex import EMAIL_REGEX, HTML_COMMENT_REGEX
-from website_scanner.utils import parse_form, get_req_kwargs
+from website_scanner.utils import parse_form, get_req_kwargs, params_to_kwargs
 
 
 class Directory:
@@ -86,8 +86,8 @@ class Crawler(InformationModule):
 
             crawl_tasks = []
             try:
-                params_kwargs = {"params": params} if method == "get" else {"data": params}
-                async with session.request(method, curr_url, **params_kwargs, **get_req_kwargs(args), allow_redirects=False) as response:
+                async with session.request(method, curr_url, **params_to_kwargs(method, params), **get_req_kwargs(args),
+                                           allow_redirects=False) as response:
                     if response.status == 404:
                         return
 

@@ -29,7 +29,7 @@ website-scanner --url "http://10.x.x.x/" --vulns --output report.json
 ```
 
 ```
-usage: website-scanner [-h] [-v] -u URL [-o OUTPUT] [-c COOKIE] [-a USER_AGENT] [-H [HEADERS ...]] [-t TIMEOUT] [-r RETRIES] [-l RATE_LIMIT] [-d DEPTH] [-i [IGNORE ...]] [--proxy PROXY] [--auth AUTH] [--recursive] [--extensions [EXTENSIONS ...]] [--vulnerabilities] [--confidence-threshold CONFIDENCE_THRESHOLD] [--lfi-depth LFI_DEPTH] [--wordpress-user-ids WORDPRESS_USER_IDS [WORDPRESS_USER_IDS ...]]
+usage: main.py [-h] [-v] -u URL [-o OUTPUT] [-c COOKIE] [-a USER_AGENT] [-H [HEADERS ...]] [-t TIMEOUT] [-r RETRIES] [-l RATE_LIMIT] [-d DEPTH] [-i [IGNORE ...]] [--proxy PROXY] [--auth AUTH] [--fill | --no-fill] [--recursive] [--extensions [EXTENSIONS ...]] [--vulnerabilities] [--confidence-threshold CONFIDENCE_THRESHOLD] [--lfi-depth LFI_DEPTH] [--wordpress-user-ids WORDPRESS_USER_IDS [WORDPRESS_USER_IDS ...]]
 
 Scan a website
 
@@ -46,8 +46,9 @@ options:
   -l, --rate-limit RATE_LIMIT                                       Limits the number of HTTP requests per second
   -d, --depth DEPTH                                                 Maximum crawler and directory enumeration depth
   -i, --ignore [IGNORE ...]                                         Directories to ignore e.g. /logout
-  --proxy PROXY                                                     Proxy server
+  --proxy PROXY                                                     HTTP Proxy
   --auth AUTH                                                       Basic Authentication <username>:<password>
+  --fill, --no-fill                                                 Fill empty values
   --recursive                                                       Recursive directory enumeration
   --extensions [EXTENSIONS ...]                                     File extensions for directory enumeration
   --vulnerabilities                                                 Scan for vulnerabilities

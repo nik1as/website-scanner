@@ -31,6 +31,7 @@ def parse_args():
     parser.add_argument("-i", "--ignore", type=str, required=False, nargs="*", default=["/logout"], help="Directories to ignore e.g. /logout")
     parser.add_argument("--proxy", type=str, required=False, help="HTTP Proxy")
     parser.add_argument("--auth", type=str, required=False, help="Basic Authentication <username>:<password>")
+    parser.add_argument('--fill', default=True, action=argparse.BooleanOptionalAction, help="Fill empty values")
     parser.add_argument("--recursive", required=False, default=False, action="store_true", help="Recursive directory enumeration")
     parser.add_argument("--extensions", type=str, required=False, nargs="*", default=[], help="File extensions for directory enumeration")
     parser.add_argument("--vulnerabilities", required=False, action="store_true", help="Scan for vulnerabilities")
@@ -95,8 +96,8 @@ async def website_scanner():
 
         if args.vulnerabilities:
             output["vulnerabilities"] = []
-            dirs = output["crawler"]["directories"]
-            tasks = [vuln().run(session, args, dirs) for vuln in VulnerabilityModule.modules]
+            directories = output["crawler"]["directories"]
+            tasks = [vuln().run(session, args, directories) for vuln in VulnerabilityModule.modules]
             results = list(itertools.chain(*(await asyncio.gather(*tasks))))
             results = group_dicts(results, "payload")
             output["vulnerabilities"] = results

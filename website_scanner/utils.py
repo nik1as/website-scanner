@@ -1,11 +1,30 @@
 import ipaddress
+import json
 import os
+import random
+import string
 import traceback
 from collections import defaultdict
 from importlib import util
+from importlib.resources import files
 from urllib.parse import parse_qs, urlparse, ParseResult, urlencode
 
 import bs4
+
+fill_path = files("website_scanner.data").joinpath("fill.json")
+with fill_path.open("r", encoding="utf-8") as f:
+    FILL_VALUES = json.load(f)
+
+
+def fill_param(param: str):
+    for entry in FILL_VALUES:
+        if param in entry["names"]:
+            return entry["value"]
+    return "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
+
+
+def params_to_kwargs(method: str, params: dict) -> dict:
+    return {"params": params} if method.casefold() == "get" else {"data": params}
 
 
 def print_json_tree(data, indent=""):

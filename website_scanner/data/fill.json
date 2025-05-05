@@ -1,0 +1,30 @@
+[
+  {
+    "names": [
+      "name",
+      "username",
+      "user"
+    ],
+    "value": "admin"
+  },
+  {
+    "names": [
+      "password",
+      "pass"
+    ],
+    "value": "admin"
+  },
+  {
+    "names": [
+      "email",
+      "mail"
+    ],
+    "value": "admin@admin.com"
+  },
+  {
+    "names": [
+      "date"
+    ],
+    "value": "2025-01-01"
+  }
+]
